@@ -1,13 +1,13 @@
-import Stack from './Stack'
-import Queue from './Queue'
+import Stack from '../Stack'
+import Queue from '../Queue'
 import {
-  TreeData, Processor, IOptionParams, IMultiTree
+  Processor, IOptionParams, TreeData
 } from '@/interface/multiTree'
 
 /**
  * 合并配置选项
  * */
-function mergeOption(option?: IOptionParams) {
+export function mergeOption(option?: IOptionParams) {
   const defaultOption = {
     childrenKey: 'children',
     routeKey: 'id',
@@ -32,13 +32,13 @@ function mergeOption(option?: IOptionParams) {
 /**
  * 生成根节点的结构化信息
  * */
-function getRootNodeStructure(node: object, option: IOptionParams, rootIndex: number) {
+export function getRootNodeStructure(node: object, option: IOptionParams, rootIndex: number) {
   const { routeKey, childrenKey } = option
   const { [childrenKey]: children, [routeKey]: nodeRoute } = node
   const isChildrenArrayAndNotEmpty = Array.isArray(children) && children.length > 0
 
   return {
-    depth: rootIndex,                                             // 节点的深度，也可以理解为层级
+    depth: 0,                                                     // 节点的深度，也可以理解为层级
     index: `${rootIndex}`,                                        // 索引，比如 '0-2-4-55-61-3'
     route: [].concat(nodeRoute),                                  // 从根节点到当前节点的路径
     siblings: [node],                                             // 同属一个父节点的兄弟节点们（含自身）
@@ -51,8 +51,8 @@ function getRootNodeStructure(node: object, option: IOptionParams, rootIndex: nu
 
 /**
  * 在遍历时累增节点的结构化信息
-* */
-function getNextLevelNodeStructure(parentNode: object, option: IOptionParams, traverseIndex: number) {
+ * */
+export function getNextLevelNodeStructure(parentNode: object, option: IOptionParams, traverseIndex: number) {
   const { childrenKey, routeKey } = option
   const { [childrenKey]: parentNodeChildren, _structure: { depth, index, route }, ...content } = parentNode
   const { [childrenKey]: children, [routeKey]: nodeRoute } = Array.isArray(parentNodeChildren) ? parentNodeChildren[traverseIndex] : {}
@@ -76,7 +76,7 @@ function getNextLevelNodeStructure(parentNode: object, option: IOptionParams, tr
  * @param   {Function} callback 回调函数
  * @param   {Object}  option
  * */
-export function dfsTraverse(data: object | object[], callback: Processor, option?: IOptionParams) {
+export function dfsTraverse(data: TreeData, callback: Processor, option?: IOptionParams) {
   if (data === null) {
     return
   }
@@ -133,7 +133,7 @@ export function dfsTraverse(data: object | object[], callback: Processor, option
  * @param   {Function} callback 回调函数
  * @param   {Object}  option
  * */
-export function bfsTraverse(data: object | object[], callback: Processor, option?: IOptionParams) {
+export function bfsTraverse(data: TreeData, callback: Processor, option?: IOptionParams) {
   if (data === null) {
     return
   }

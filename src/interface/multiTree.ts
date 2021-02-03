@@ -26,7 +26,7 @@ export interface ITraverseNodeStructure extends INodeStructure {
 }
 
 // 树结构的数据
-export type TreeData = object | null
+export type TreeData = object | object[]
 
 // 遍历方法的回调函数
 export type Processor = (
@@ -40,7 +40,7 @@ export type MapCallback = (
   node: object,                       // 当前节点的信息
   structure?: ITraverseNodeStructure, // 当前节点的结构信息
   data?: TreeData                     // 树结构的数据
-) => void
+) => object
 
 export type FilterCallback = (
   node: object,               // 当前节点的信息
@@ -58,7 +58,7 @@ export type ReduceCallback = <T = any>(
 export type TraversalType = 'dfs' | 'bfs' // 遍历方式
 
 export interface IMultiTree {
-  _option: IOption | null
+  _option: IOption
 
   data: TreeData
 
@@ -68,7 +68,7 @@ export interface IMultiTree {
    * @param   {String} traversalType 遍历方式，'dfs'表示深度优先，'bfs'表示广度优先
    * @return  {Object} 新的树
    */
-  forEach: (callback: Processor, traversalType: TraversalType) => void
+  forEach: (callback: Processor, traversalType?: TraversalType) => void
 
   /**
    * 映射成一棵新的树，用法类似数组的 map 方法
@@ -90,7 +90,7 @@ export interface IMultiTree {
    * @param   {Function} callback 回调函数
    * @return  {Array} 符合条件的节点
    * */
-  pick: (callback: FilterCallback) => any[]
+  pick: (callback: FilterCallback) => object[]
 
   /**
   * 累加器，用法类似数组的 reduce 方法
@@ -105,7 +105,7 @@ export interface IMultiTree {
    * @param   {String} traversalType 遍历方式，'dfs' 表示深度优先，'bfs' 表示广度优先
    * @return  {Array} 转换后的数组
    * */
-  toArray: (relationKey: string, traversalType: TraversalType) => object[]
+  toArray: (relationKey: string, traversalType?: TraversalType) => object[]
 
   /**
    * 获取结构化后的数据
