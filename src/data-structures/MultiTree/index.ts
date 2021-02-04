@@ -4,6 +4,7 @@ import {
   MapCallback, FilterCallback, ReduceCallback, IGetRouteBetweenTwoNodeOption
 } from '@/interface/multiTree'
 import { mergeOption, bfsTraverse, dfsTraverse, getRootNodeStructure, getNextLevelNodeStructure } from './util'
+import Stack from '../../data-structures/Stack'
 
 export default class MultiTree implements IMultiTree {
   // 配置项
@@ -107,19 +108,16 @@ export default class MultiTree implements IMultiTree {
     return result
   }
 
-  reduce<T>(callback: ReduceCallback, initialValue: T, traversalType: TraversalType = 'dfs'): T {
+  reduce<T>(callback: ReduceCallback, initialValue: T, traversalType: TraversalType = 'dfs', option?: IOptionParams): T {
     let total = initialValue
-    let traverse = bfsTraverse
-    if (traversalType === 'bfs') {
-      traverse = dfsTraverse
+    const newOption = {
+      ...this._option,
+      ...option
     }
-    traverse(
-      this.data,
-      (item, nodeStructure, vm) => {
-        total = callback(total, item, nodeStructure, vm);
-      },
-      this._option,
-    );
+
+    this.forEach((item, structure, vm) => {
+      total = callback(total, item, structure, vm)
+    }, traversalType, newOption)
 
     return total
   }
@@ -127,7 +125,10 @@ export default class MultiTree implements IMultiTree {
   /**
    * 找出两个节点之间的路径
    * */
-  getRouteBetweenTwoNode(startNode: any, endNode: any, option?: IGetRouteBetweenTwoNodeOption) {
+  getRouteBetweenTwoNode(startNode: any, endNode: any, option: IGetRouteBetweenTwoNodeOption = {
+    matchKey: 'id',
+    routeKey: 'id'
+  }) {
     const { matchKey, routeKey } = option
     let matched = [false, false]
     let matchedNodes = []
@@ -170,10 +171,61 @@ export default class MultiTree implements IMultiTree {
           break
         }
       }
-      result = result.concat(endRoute.slice(tempIndex))
+      if (tempIndex > -1) {
+        result = result.concat(endRoute.slice(tempIndex))
+      } else {
+        result = []
+      }
       return result
     } else {
       return []
+    }
+  }
+
+  /**
+   * 获取所有的 节点 和 节点之间的连线关系，可以用在绘图等方面，使用深度优先遍历
+   * */
+  getNodesAndRelations(relationKey: string = 'id') {
+    if (this.data === null) {
+      return {
+        nodes: [],
+        relations: [],
+      }
+    }
+    const { childrenKey } = this._option
+    const nodes = []
+    const relations = []
+    const stack = new Stack()
+
+    if (Array.isArray(this.data)) {
+      for (let i = this.data.length - 1; i >= 0; i--) {
+        stack.push(this.data[i])
+      }
+    } else {
+      stack.push(this.data)
+    }
+
+    while (!stack.isEmpty()) {
+      const node = stack.pop()
+      const { [childrenKey]: children, ...content } = node
+      nodes.push(content)
+      if (Array.isArray(children) && children.length > 0) {
+        const length = children.length
+        for (let i = length - 1; i >= 0; i--) {
+          stack.push(children[i])
+          const { [relationKey]: parentAttr } = node
+          const { [relationKey]: childAttr } = children[i]
+          relations.push({
+            parent: parentAttr,
+            child: childAttr,
+          })
+        }
+      }
+    }
+
+    return {
+      nodes,
+      relations,
     }
   }
 

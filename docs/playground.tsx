@@ -17,6 +17,8 @@ console.log(entity.getRouteBetweenTwoNode('音乐人', '电影编剧', {
   matchKey: 'label'
 }))
 
+console.log(entity.getNodesAndRelations('label'))
+
 const entity2 = new MultiTree(treeData2, {
   routeKey: 'name'
 })

@@ -30,6 +30,16 @@ export interface IGetRouteBetweenTwoNodeOption {
   routeKey?: string;
 }
 
+export interface IRelation {
+  parent: any;
+  child: any
+}
+
+export interface INodesAndRelations {
+  nodes: object[];
+  relations: IRelation[]
+}
+
 // 树结构的数据
 export type TreeData = object | object[]
 
@@ -102,7 +112,7 @@ export interface IMultiTree {
    * @param   {Function} callback 回调函数
    * @return  {any} 累加处理后新的值
   * */
-  reduce: <T>(callback: ReduceCallback, initialValue: any, traversalType?: TraversalType) => T
+  reduce: <T>(callback: ReduceCallback, initialValue: any, traversalType?: TraversalType, option?: IOptionParams) => T
 
   /**
    * 转换成数组
@@ -126,7 +136,26 @@ export interface IMultiTree {
    * */
   getRouteBetweenTwoNode: (startNode: any, endNode: any, option?: IGetRouteBetweenTwoNodeOption) => any[]
 
-  // getNodesAndRelations
+  /**
+   * 获取所有的节点，已经两两节点之间的关系，这可以应用在绘图等领域
+   * @param {String} relationKey 两个节点之间关联的属性
+   * @return {Object} 返回数组所有的节点和连线关系，返回的对象形如 INodesAndRelations，或者如下
+   * {
+   *   nodes: [node0, node1],
+   *     relations: [
+   *       {
+   *         parent: '0001',
+   *         children: '0002'
+   *       },
+   *       {
+   *         parent: '0001',
+   *         children: '0003'
+   *       },
+   *    ]
+   * }
+   * */
+  getNodesAndRelations: (relationKey?: string) => INodesAndRelations
+
   // getTreeStructure
 }
 
