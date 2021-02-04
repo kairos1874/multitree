@@ -4,7 +4,7 @@ import React from 'react';
 import treeData from './_mock/treeData.mock'
 import treeData2 from './_mock/treeData2.mock'
 import menuData from './_mock/menuData.mock'
-import MultiTree from '../src/data-structures/MultiTree/index'
+import MultiTree from '../src/index'
 
 const entity = new MultiTree(treeData, {
   childrenKey: 'child',
