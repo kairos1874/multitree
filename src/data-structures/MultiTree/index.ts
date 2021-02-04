@@ -186,4 +186,8 @@ export default class MultiTree implements IMultiTree {
   // getStructuralData(): TreeData {
   //   return undefined;
   // }
+
+  // getTreeInfo
+  // return depth degree
+  // 获取二维平面的矩阵
 }
