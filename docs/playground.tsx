@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-no-target-blank */
 
 import React from 'react';
-import { bfsTraverse } from '../src/data-structures/MultiTree/util'
 import treeData from './_mock/treeData.mock'
 import treeData2 from './_mock/treeData2.mock'
 import menuData from './_mock/menuData.mock'
@@ -12,6 +11,12 @@ const entity = new MultiTree(treeData, {
   targetChildrenKey: 'nodes',
   routeKey: 'name'
 })
+
+console.log(entity.getRouteBetweenTwoNode('音乐人', '电影编剧', {
+  routeKey: 'label',
+  matchKey: 'label'
+}))
+
 const entity2 = new MultiTree(treeData2, {
   routeKey: 'name'
 })
@@ -35,29 +40,23 @@ const entity2 = new MultiTree(treeData2, {
 //   return structure.depth === 3
 // }))
 
-console.log(entity.toArray())
 
-// dfsTraverse(
-//   treeData,
-//   (item, structData, vm) => {
-//     // debugger
-//     console.log(item.label, structData.index, structData.route, {
-//       ...item,
-//       ...structData,
-//     });
-//   },
-//   {
-//     routeKey: 'label',
-//     childrenKey: 'child',
-//     targetChildrenKey: 'children'
-//   },
-// )
+// console.log(entity.reduce((prev, item, construct, vm) => {
+//   return prev.concat(`-${item.label}`)
+// }, 'head', 'dfs'))
 
-bfsTraverse(treeData2, (item, structure, vm) => {
-  console.log(item.name, structure.depth, structure.route.join('-'))
-}, {
-  routeKey: 'name'
-})
+// console.log(entity.reduce((prev, item, construct, vm) => {
+//   debugger
+//   return prev.push(item.label)
+// }, [], 'dfs'))
+
+// console.log(entity.toArray())
+
+// bfsTraverse(treeData2, (item, structure, vm) => {
+//   console.log(item.name, structure.depth, structure.route.join('-'))
+// }, {
+//   routeKey: 'name'
+// })
 
 export default () => {
   return <div />

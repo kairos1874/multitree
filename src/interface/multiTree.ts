@@ -25,6 +25,11 @@ export interface ITraverseNodeStructure extends INodeStructure {
   order?: number; // 遍历顺序
 }
 
+export interface IGetRouteBetweenTwoNodeOption {
+  matchKey?: string;
+  routeKey?: string;
+}
+
 // 树结构的数据
 export type TreeData = object | object[]
 
@@ -48,7 +53,7 @@ export type FilterCallback = (
   data?: TreeData             // 树结构的数据
 ) => boolean
 
-export type ReduceCallback = <T = any>(
+export type ReduceCallback = <T>(
   total: T,                   // 初始值, 或者计算结束后的返回值
   node: object,               // 当前节点的信息
   structure?: INodeStructure, // 当前节点的结构信息
@@ -68,7 +73,7 @@ export interface IMultiTree {
    * @param   {String} traversalType 遍历方式，'dfs'表示深度优先，'bfs'表示广度优先
    * @return  {Object} 新的树
    */
-  forEach: (callback: Processor, traversalType?: TraversalType) => void
+  forEach: (callback: Processor, traversalType?: TraversalType, option?: IOptionParams) => void
 
   /**
    * 映射成一棵新的树，用法类似数组的 map 方法
@@ -97,7 +102,7 @@ export interface IMultiTree {
    * @param   {Function} callback 回调函数
    * @return  {any} 累加处理后新的值
   * */
-  reduce: <T = any>(callback: ReduceCallback) => T
+  reduce: <T>(callback: ReduceCallback, initialValue: any, traversalType?: TraversalType) => T
 
   /**
    * 转换成数组
@@ -112,8 +117,16 @@ export interface IMultiTree {
    * */
   getStructuralData: () => TreeData
 
-  // getNodesAndRelations
+  /**
+   * 获取两个节点之间的路径
+   * @param {any} startNode 开始节点
+   * @param {any} endNode 结束节点
+   * @param {IGetRouteBetweenTwoNodeOption} 配置选项
+   * @return {Array} 两个节点之间的路径数组，如果返回的是空数组，那说明部分节点不存在，或者两个节点不在同一棵树下（森林形态）
+   * */
+  getRouteBetweenTwoNode: (startNode: any, endNode: any, option?: IGetRouteBetweenTwoNodeOption) => any[]
 
+  // getNodesAndRelations
   // getTreeStructure
 }
 
