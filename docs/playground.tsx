@@ -17,6 +17,10 @@ console.log(entity.getRouteBetweenTwoNode('音乐人', '电影编剧', {
   matchKey: 'label'
 }))
 
+console.log(entity.filter((item, structure, vm) => {
+  return item.label === '音乐人'
+}))
+
 console.log(entity.getNodesAndRelations('label'))
 
 const entity2 = new MultiTree(treeData2, {

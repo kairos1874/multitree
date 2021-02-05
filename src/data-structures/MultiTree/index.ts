@@ -10,7 +10,7 @@ export default class MultiTree implements IMultiTree {
   // 配置项
   private readonly _option: IOption;
   // 树结构的原始数据
-  private readonly data: TreeData;
+  private data: TreeData;
 
   constructor(data: TreeData, option?: IOptionParams) {
     this.data = data
@@ -79,13 +79,13 @@ export default class MultiTree implements IMultiTree {
     })
   }
 
-  pick(callback: FilterCallback): object[] {
+  pick(callback: FilterCallback, option?: IOptionParams): object[] {
     const result = []
     this.forEach((item, structure, vm) => {
       if (callback(item, structure, vm)) {
         result.push(item)
       }
-    })
+    }, 'bfs', option)
     return result
   }
 
@@ -120,6 +120,82 @@ export default class MultiTree implements IMultiTree {
     }, traversalType, newOption)
 
     return total
+  }
+
+  /**
+   * filter 方法，用递归实现，返回树结构
+   * */
+  filter(callback: FilterCallback, option?: IOptionParams) {
+    const vm = this
+    if (this.data === null) {
+      return null
+    }
+    const newOption = {
+      ...this._option,
+      ...option
+    }
+    const { childrenKey, targetChildrenKey } = newOption
+
+    function recursion(data: object) {
+      const { [childrenKey]: children, _structure, ...content } = data;
+      if (Array.isArray(children) && children.length > 0) {
+        const shortlisted: any[] = children
+          .map((item, subIndex) => {
+            return recursion({
+              ...item,
+              _structure: getNextLevelNodeStructure(data, newOption, subIndex),
+            })
+          })
+          .filter(ele => ele !== null)
+
+        if (shortlisted.length > 0) {
+          return {
+            ...content,
+            [targetChildrenKey]: shortlisted,
+          };
+        }
+        if (
+          callback(
+            content,
+            {
+              ..._structure,
+            },
+            vm.data as object,
+          )
+        ) {
+          return { ...content };
+        }
+        return null;
+      } else {
+        if (
+          callback(
+            content,
+            {
+              ..._structure,
+              // order
+            },
+            vm.data as object,
+          )
+        ) {
+          return { ...content };
+        }
+        return null;
+      }
+    }
+
+    if (Array.isArray(this.data)) {
+      return this.data.map((item, index) => {
+        return recursion({
+          ...item,
+          _structure: getRootNodeStructure(item, newOption, index),
+        })
+      }).filter(ele => ele !== null)
+    }
+
+    return recursion({
+      ...this.data,
+      _structure: getRootNodeStructure(this.data, newOption, 0),
+    })
   }
 
   /**
@@ -229,17 +305,15 @@ export default class MultiTree implements IMultiTree {
     }
   }
 
-  // shake 用这个代替 filter
-
-  // filter(callback: FilterCallback): TreeData {
-  //   return undefined;
+  // addNode(parent: any, node, matchKey: string = 'id') {
+  //   if (parent === null) {
+  //     if (Array.isArray(this.data)) {
+  //       this.data = this.data.concat(node)
+  //     } else {
+  //       this.data = [this.data].concat(node)
+  //     }
+  //   } else {
+  //
+  //   }
   // }
-
-  // getStructuralData(): TreeData {
-  //   return undefined;
-  // }
-
-  // getTreeInfo
-  // return depth degree
-  // 获取二维平面的矩阵
 }

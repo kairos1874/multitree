@@ -90,7 +90,7 @@ export interface IMultiTree {
    * @param   {Function} callback 回调函数
    * @return  {Object} 新的树
    * */
-  map: (callback: MapCallback) => TreeData
+  map: (callback: MapCallback, option?: IOptionParams) => TreeData
 
   /**
    * 按条件筛选出符合条件的节点，返回树结构
@@ -98,14 +98,14 @@ export interface IMultiTree {
    * @param   {Function} callback 回调函数
    * @return  {Object} 一棵新的树
    * */
-  filter: (callback: FilterCallback) => TreeData
+  filter: (callback: FilterCallback, option?: IOptionParams) => TreeData
 
   /**
    * 按条件筛选出符合条件的节点，返回数组，也可以当做搜索来用
    * @param   {Function} callback 回调函数
    * @return  {Array} 符合条件的节点
    * */
-  pick: (callback: FilterCallback) => object[]
+  pick: (callback: FilterCallback, option?: IOptionParams) => object[]
 
   /**
   * 累加器，用法类似数组的 reduce 方法
@@ -121,11 +121,6 @@ export interface IMultiTree {
    * @return  {Array} 转换后的数组
    * */
   toArray: (relationKey: string, traversalType?: TraversalType) => object[]
-
-  /**
-   * 获取结构化后的数据
-   * */
-  getStructuralData: () => TreeData
 
   /**
    * 获取两个节点之间的路径
