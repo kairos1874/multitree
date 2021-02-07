@@ -1,5 +1,5 @@
 import {
-  IMultiTree, IOption, ITree, ITreeData, Processor, TraversalType, IOptionParams,
+  IMultiTree, IOption, INode, ITree, ITreeData, Processor, TraversalType, IOptionParams,
   MapCallback, FilterCallback, ReduceCallback, IGetRouteBetweenTwoNodeOption
 } from '@/interface/multiTree'
 import { mergeOption, bfsTraverse, dfsTraverse, getRootNodeStructure, getNextLevelNodeStructure } from './util'
@@ -10,7 +10,6 @@ export default class MultiTree implements IMultiTree {
   public readonly _option: IOption
   // 树结构的数据
   public readonly data: ITreeData
-  [key: string]: any
 
   constructor(data: ITreeData, option?: IOptionParams) {
     this.data = data
@@ -95,17 +94,19 @@ export default class MultiTree implements IMultiTree {
   toArray(relationKey: string = 'id', traversalType?: TraversalType): object[] {
     const result: ITree[] = []
     this.forEach((item, structure, vm) => {
-      const { parent } = structure
       let parentNode = null
-      if ('parent' in structure && parent) {
-        const { parent: { [relationKey]: tempParentNode } } = structure
-        parentNode = tempParentNode
-      }
+      if (structure) {
+        const { parent } = structure
 
+        if ('parent' in structure && parent) {
+          const { parent: { [relationKey]: tempParentNode } } = structure
+          parentNode = tempParentNode
+        }
+      }
       result.push({
         ...item,
         parent: parentNode
-      });
+      })
     }, traversalType)
 
     return result
@@ -210,9 +211,9 @@ export default class MultiTree implements IMultiTree {
   }) {
     const { matchKey, routeKey } = option
     let matched = [false, false]
-    let matchedNodes = []
+    let matchedNodes: INode[] = []
     this.forEach((item, structure, vm) => {
-      const { [matchKey]: targetField } = item
+      const { [matchKey as string]: targetField } = item
       if (targetField === startNode && (!matched[0])) {
         matched[0] = true
         matchedNodes.unshift({

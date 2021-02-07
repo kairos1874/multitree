@@ -1,7 +1,6 @@
 {
-  "private": true,
-  "name": "multitree",
-  "version": "1.0.0",
+  "name": "@hyrule/multitree",
+  "version": "0.1.0",
   "scripts": {
     "start": "dumi dev",
     "docs:build": "dumi build",

@@ -65,5 +65,5 @@ const entity2 = new MultiTree(treeData2, {
 // })
 
 export default () => {
-  return <div />
+  return <div>hello world</div>
 };

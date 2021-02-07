@@ -41,6 +41,10 @@ export interface INodesAndRelations {
   relations: IRelation[]
 }
 
+export interface INode {
+  [key: string]: any
+}
+
 export interface ITree {
   [key: string]: any
 }
@@ -50,7 +54,7 @@ export type ITreeData = ITree | ITree[] | null
 
 // 遍历方法的回调函数
 export type Processor = (
-  node: object,                       // 当前节点的信息
+  node: INode,                       // 当前节点的信息
   structure?: ITraverseNodeStructure, // 当前节点的结构信息
   data?: ITreeData                    // 树结构的数据
 ) => void
