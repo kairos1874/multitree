@@ -1,6 +1,5 @@
-
 import {
-  IMultiTree, IOption, TreeData, Processor, TraversalType, IOptionParams,
+  IMultiTree, IOption, ITree, ITreeData, Processor, TraversalType, IOptionParams,
   MapCallback, FilterCallback, ReduceCallback, IGetRouteBetweenTwoNodeOption
 } from '@/interface/multiTree'
 import { mergeOption, bfsTraverse, dfsTraverse, getRootNodeStructure, getNextLevelNodeStructure } from './util'
@@ -8,11 +7,12 @@ import Stack from '../../data-structures/Stack'
 
 export default class MultiTree implements IMultiTree {
   // 配置项
-  private readonly _option: IOption;
-  // 树结构的原始数据
-  private data: TreeData;
+  public readonly _option: IOption
+  // 树结构的数据
+  public readonly data: ITreeData
+  [key: string]: any
 
-  constructor(data: TreeData, option?: IOptionParams) {
+  constructor(data: ITreeData, option?: IOptionParams) {
     this.data = data
     this._option = mergeOption(option)
   }
@@ -29,7 +29,7 @@ export default class MultiTree implements IMultiTree {
     }
   }
 
-  map(callback: MapCallback, option?: IOptionParams): TreeData {
+  map(callback: MapCallback, option?: IOptionParams): ITreeData {
     if (this.data === null) {
       return null
     }
@@ -41,9 +41,12 @@ export default class MultiTree implements IMultiTree {
     const vm = this
     const { childrenKey, targetChildrenKey } = newOption
 
-    function recursion(data: object) {
-      const { [childrenKey]: children, _structure, ...content } = data
-      const target = callback(
+    function recursion(data: ITree) {
+      const { [childrenKey as string]: children, _structure, ...content } = data
+
+      // const children = _get(data, childrenKey as string, [])
+
+      const target: ITree = callback(
         content,
         {
           ..._structure,
@@ -80,7 +83,7 @@ export default class MultiTree implements IMultiTree {
   }
 
   pick(callback: FilterCallback, option?: IOptionParams): object[] {
-    const result = []
+    const result: ITree[] = []
     this.forEach((item, structure, vm) => {
       if (callback(item, structure, vm)) {
         result.push(item)
@@ -90,7 +93,7 @@ export default class MultiTree implements IMultiTree {
   }
 
   toArray(relationKey: string = 'id', traversalType?: TraversalType): object[] {
-    const result = []
+    const result: ITree[] = []
     this.forEach((item, structure, vm) => {
       const { parent } = structure
       let parentNode = null
@@ -136,7 +139,7 @@ export default class MultiTree implements IMultiTree {
     }
     const { childrenKey, targetChildrenKey } = newOption
 
-    function recursion(data: object) {
+    function recursion(data: ITree) {
       const { [childrenKey]: children, _structure, ...content } = data;
       if (Array.isArray(children) && children.length > 0) {
         const shortlisted: any[] = children

@@ -1,19 +1,20 @@
+import _get from 'lodash/get'
 import Stack from '../Stack'
 import Queue from '../Queue'
 import {
-  Processor, IOptionParams, TreeData
+  Processor, IOptionParams, ITree, ITreeData
 } from '@/interface/multiTree'
+
+const defaultOption = {
+  childrenKey: 'children',
+  routeKey: 'id',
+  targetChildrenKey: 'children',
+}
 
 /**
  * 合并配置选项
  * */
 export function mergeOption(option?: IOptionParams) {
-  const defaultOption = {
-    childrenKey: 'children',
-    routeKey: 'id',
-    targetChildrenKey: 'children',
-  }
-
   let targetOption = { ...defaultOption }
 
   if (option?.childrenKey) {
@@ -32,9 +33,11 @@ export function mergeOption(option?: IOptionParams) {
 /**
  * 生成根节点的结构化信息
  * */
-export function getRootNodeStructure(node: object, option: IOptionParams, rootIndex: number) {
+export function getRootNodeStructure(node: object, option: IOptionParams = defaultOption, rootIndex: number) {
   const { routeKey, childrenKey } = option
-  const { [childrenKey]: children, [routeKey]: nodeRoute } = node
+  const children = _get(node, childrenKey as string, [])
+  const nodeRoute = _get(node, routeKey as string)
+
   const isChildrenArrayAndNotEmpty = Array.isArray(children) && children.length > 0
 
   return {
@@ -43,7 +46,7 @@ export function getRootNodeStructure(node: object, option: IOptionParams, rootIn
     route: [].concat(nodeRoute),                                  // 从根节点到当前节点的路径
     siblings: [node],                                             // 同属一个父节点的兄弟节点们（含自身）
     children: isChildrenArrayAndNotEmpty ? children : [],         // 子节点
-    degree: isChildrenArrayAndNotEmpty > 0 ? children.length : 0, // 该节点的度，也就是子节点的数量
+    degree: isChildrenArrayAndNotEmpty ? children.length : 0, // 该节点的度，也就是子节点的数量
     parent: null,                                                 // 父节点
     isLeaf: !isChildrenArrayAndNotEmpty,                          // 是否为叶子节点
   }
@@ -52,11 +55,16 @@ export function getRootNodeStructure(node: object, option: IOptionParams, rootIn
 /**
  * 在遍历时累增节点的结构化信息
  * */
-export function getNextLevelNodeStructure(parentNode: object, option: IOptionParams, traverseIndex: number) {
+export function getNextLevelNodeStructure(parentNode: ITree, option: IOptionParams = defaultOption, traverseIndex: number) {
   const { childrenKey, routeKey } = option
-  const { [childrenKey]: parentNodeChildren, _structure: { depth, index, route }, ...content } = parentNode
-  const { [childrenKey]: children, [routeKey]: nodeRoute } = Array.isArray(parentNodeChildren) ? parentNodeChildren[traverseIndex] : {}
+
+  const { [childrenKey as string]: parentNodeChildren, _structure, ...content } = parentNode
+  const { [childrenKey as string]: children, [routeKey as string]: nodeRoute } = Array.isArray(parentNodeChildren) ? parentNodeChildren[traverseIndex] : {}
   const isChildrenArrayAndNotEmpty = Array.isArray(children) && children.length > 0
+
+  const depth = _get(parentNode, '_structure.depth')
+  const index = _get(parentNode, '_structure.index')
+  const route = _get(parentNode, '_structure.route')
 
   return {
     depth: depth + 1,                                         // 节点的深度，也可以理解为层级
@@ -76,7 +84,7 @@ export function getNextLevelNodeStructure(parentNode: object, option: IOptionPar
  * @param   {Function} callback 回调函数
  * @param   {Object}  option
  * */
-export function dfsTraverse(data: TreeData, callback: Processor, option?: IOptionParams) {
+export function dfsTraverse(data: ITreeData, callback: Processor, option?: IOptionParams) {
   if (data === null) {
     return
   }
@@ -133,7 +141,7 @@ export function dfsTraverse(data: TreeData, callback: Processor, option?: IOptio
  * @param   {Function} callback 回调函数
  * @param   {Object}  option
  * */
-export function bfsTraverse(data: TreeData, callback: Processor, option?: IOptionParams) {
+export function bfsTraverse(data: ITreeData, callback: Processor, option?: IOptionParams) {
   if (data === null) {
     return
   }

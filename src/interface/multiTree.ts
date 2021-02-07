@@ -19,6 +19,7 @@ export interface INodeStructure {
   siblings?: any[]; // 同属一个父节点的兄弟节点们（含自身）
   children?: any[]; // 子节点
   isLeaf?: boolean; // 是否为叶子节点
+  parent?: any
 }
 
 export interface ITraverseNodeStructure extends INodeStructure {
@@ -40,34 +41,38 @@ export interface INodesAndRelations {
   relations: IRelation[]
 }
 
+export interface ITree {
+  [key: string]: any
+}
+
 // 树结构的数据
-export type TreeData = object | object[]
+export type ITreeData = ITree | ITree[] | null
 
 // 遍历方法的回调函数
 export type Processor = (
   node: object,                       // 当前节点的信息
   structure?: ITraverseNodeStructure, // 当前节点的结构信息
-  data?: TreeData                     // 树结构的数据
+  data?: ITreeData                    // 树结构的数据
 ) => void
 
 //
 export type MapCallback = (
   node: object,                       // 当前节点的信息
   structure?: ITraverseNodeStructure, // 当前节点的结构信息
-  data?: TreeData                     // 树结构的数据
+  data?: ITreeData                     // 树结构的数据
 ) => object
 
 export type FilterCallback = (
   node: object,               // 当前节点的信息
   structure?: INodeStructure, // 当前节点的结构信息
-  data?: TreeData             // 树结构的数据
+  data?: ITreeData             // 树结构的数据
 ) => boolean
 
 export type ReduceCallback = <T>(
   total: T,                   // 初始值, 或者计算结束后的返回值
   node: object,               // 当前节点的信息
   structure?: INodeStructure, // 当前节点的结构信息
-  data?: TreeData             // 树结构的数据
+  data?: ITreeData             // 树结构的数据
 ) => T
 
 export type TraversalType = 'dfs' | 'bfs' // 遍历方式
@@ -75,7 +80,7 @@ export type TraversalType = 'dfs' | 'bfs' // 遍历方式
 export interface IMultiTree {
   _option: IOption
 
-  data: TreeData
+  data: ITreeData
 
   /**
    * 遍历，类似数组的 forEach，可以分为深度优先遍历和广度优先遍历两种方式
@@ -90,7 +95,7 @@ export interface IMultiTree {
    * @param   {Function} callback 回调函数
    * @return  {Object} 新的树
    * */
-  map: (callback: MapCallback, option?: IOptionParams) => TreeData
+  map: (callback: MapCallback, option?: IOptionParams) => ITreeData
 
   /**
    * 按条件筛选出符合条件的节点，返回树结构
@@ -98,7 +103,7 @@ export interface IMultiTree {
    * @param   {Function} callback 回调函数
    * @return  {Object} 一棵新的树
    * */
-  filter: (callback: FilterCallback, option?: IOptionParams) => TreeData
+  filter: (callback: FilterCallback, option?: IOptionParams) => ITreeData
 
   /**
    * 按条件筛选出符合条件的节点，返回数组，也可以当做搜索来用
