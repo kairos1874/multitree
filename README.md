@@ -1,12 +1,10 @@
 ## 使用
-
-## 使用
 ```
 yarn add @hyrule/multitree
 ```
 
 ## 工具方法
-dfsTraverse(treeData, callback, [option])
+### dfsTraverse(treeData, callback, [option])
 
 使用深度优先进行遍历树结构
 
@@ -29,7 +27,7 @@ dfsTraverse(treeData, (item, structure, data) => {
 })
 ```
 
-bfsTraverse(treeData, callback, [option])
+### bfsTraverse(treeData, callback, [option])
 
 使用广度优先进行遍历树结构
 
@@ -51,3 +49,68 @@ bfsTraverse(treeData, (item, structure, data) => {
     routeKey: 'id'
 })
 ```
+
+## 实例方法
+
+### forEach(callback, [option])
+
+```javascript
+import MultiTree from '@hyrule/multitree'
+const entity = new MultiTree(treeData)
+entity.forEach((item, structure, data) => {
+  console.log(item, structure, data)
+})
+```
+
+### map(callback, [option])
+
+```javascript
+import MultiTree from '@hyrule/multitree'
+const entity = new MultiTree(treeData)
+entity.map((item, structure, data) => {
+  return {
+    ...item,
+    depth: structure.depth,
+    degree: structure.depth,
+    index: structure.index,
+    route: structure.structure,
+    siblings: structure.siblings,
+    isLeaf: structure.structure,
+    parent: structure.structure
+  }
+})
+```
+
+### filter(callback, [option])
+
+```javascript
+import MultiTree from '@hyrule/multitree'
+const entity = new MultiTree(treeData)
+entity.map((item, structure, data) => {
+  return structure.isLeaf && structrue.depth === 3
+})
+```
+
+### pick(callback, [option])
+
+```javascript
+import MultiTree from '@hyrule/multitree'
+const entity = new MultiTree(treeData)
+entity.pick((item, structure, data) => {
+  return structure.isLeaf && structrue.depth === 3
+})
+```
+
+### toArray(relationKey, [traversalType])
+
+```javascript
+import MultiTree from '@hyrule/multitree'
+const entity = new MultiTree(treeData)
+entity.toArray('id')
+```
+
+### reduce
+
+### getRouteBetweenTwoNode
+
+### getNodesAndRelations
